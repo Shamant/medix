@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import GoogleAuth from './auth';
+import UserForm from './data';
+import Chat from './bot';
+import Dashboard from './dashboard';
+import CommentPage from './comment';
+import UploadPDF from './add';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<GoogleAuth />} />
+          <Route path="/userform" element={<UserForm />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/add" element={<UploadPDF />} />
+          <Route path="/comment/:id" element={<CommentPage />} /> {/* Route to CommentPage */}
+        </Routes>
+      </div>
+    </Router>
   );
-}
+};
 
 export default App;
