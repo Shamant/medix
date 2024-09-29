@@ -6,6 +6,7 @@ import Chat from './bot';
 import Dashboard from './dashboard';
 import CommentPage from './comment';
 import UploadPDF from './add';
+import QuizComponent from './questions';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/add" element={<UploadPDF />} />
           <Route path="/comment/:id" element={<CommentPage />} /> {/* Route to CommentPage */}
+          <Route path="/quiz" element={<QuizComponent />} />
         </Routes>
       </div>
     </Router>
