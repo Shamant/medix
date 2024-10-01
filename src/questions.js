@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import quizBank from './quizbank';
+import { collection, updateDoc, getDocs, query, where } from 'firebase/firestore';
+import { db } from './config/firebase';
+import { Navigate } from 'react-router-dom';
 
 function QuizComponent() {
-
-  const [selectedIssue, setSelectedIssue] = useState('');
+  const [selectedIssueIndex, setSelectedIssueIndex] = useState(0); // Automatically start with the first issue
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [userDisorders, setUserDisorders] = useState([]);
+  const [userDisorders, setUserDisorders] = useState({});
   const [quizCompleted, setQuizCompleted] = useState(false);
 
-  const handleIssueChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectedIssue(selectedValue);
+  useEffect(() => {
     setCurrentQuestionIndex(0);
     setAnswers({});
-    setUserDisorders([]);
     setQuizCompleted(false);
-  };
+  }, [selectedIssueIndex]);
 
   const handleNext = () => {
     setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
@@ -35,44 +33,88 @@ function QuizComponent() {
     }));
   };
 
+  const calculateSeverity = (totalScore) => {
+    if (totalScore <= 3) return 'mild';
+    if (totalScore <= 7) return 'moderate';
+    return 'severe';
+  };
+
   const calculateQuizScore = async () => {
     let totalScore = 0;
+    const currentIssue = quizBank[selectedIssueIndex];
 
-    quizBank.forEach((issue) => {
-      if (issue.issue === selectedIssue) {
-        issue.questions.forEach((question) => {
-          const userAnswer = answers[question.id];
-          const answerIndex = question.options.indexOf(userAnswer);
-          totalScore += answerIndex;
-        });
+    if (currentIssue) {
+      currentIssue.questions.forEach((question) => {
+        const userAnswer = answers[question.id];
+        const answerIndex = question.options.indexOf(userAnswer);
+
+        if (answerIndex === 0) {
+          totalScore += 1;
+        }
+      });
+    }
+
+    const severity = calculateSeverity(totalScore);
+
+    if (totalScore > 0) {
+      try {
+        const name = localStorage.getItem('username');
+
+        if (!name) {
+          console.error('Username not found in localStorage');
+          return;
+        }
+
+        const q = query(collection(db, 'users'), where('name', '==', name));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const userDoc = querySnapshot.docs[0];
+          const responseData = userDoc.data().response;
+          const responseObject = responseData ? JSON.parse(responseData) : {};
+
+          responseObject[currentIssue.issue] = severity;
+
+          const updatedResponse = JSON.stringify(responseObject);
+          await updateDoc(userDoc.ref, {
+            response: updatedResponse,
+          });
+
+          console.log(`Disorder ${currentIssue.issue} with severity ${severity} added/updated in user's response.`);
+          setUserDisorders((prevDisorders) => ({
+            ...prevDisorders,
+            [currentIssue.issue]: severity,
+          }));
+        } else {
+          console.log('No user found with the name:', name);
+        }
+      } catch (error) {
+        console.error('Error fetching or updating user data:', error);
       }
-    });
-
-    if (parseInt(totalScore) > 18) {
-      const newDisorder = selectedIssue;
-      console.log(totalScore);
-    } else {
-      console.log('You do not have any disorders.');
     }
 
     setQuizCompleted(true);
   };
 
-  const currentIssue = quizBank.find((issue) => issue.issue === selectedIssue);
+  const handleFinishQuiz = () => {
+    calculateQuizScore();
+
+    if (selectedIssueIndex < quizBank.length - 1) {
+      setSelectedIssueIndex((prevIndex) => prevIndex + 1);
+    } else {
+      console.log('All quizzes are completed.');
+      Navigate('/dashboard');
+    }
+  };
+
+  const currentIssue = quizBank[selectedIssueIndex];
 
   return (
     <div style={{ height: '100vh', backgroundColor: '#333', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ padding: '20px', width: '100%', maxWidth: '700px', border: '1px solid #ccc', borderRadius: '10px', backgroundColor: '#444' }}>
-        <select value={selectedIssue} onChange={handleIssueChange} style={{ marginBottom: '20px', padding: '10px', width: '100%', fontSize: '16px' }}>
-          <option value="">Select Disorder</option>
-          {quizBank.map((issue) => (
-            <option key={issue.issue} value={issue.issue}>
-              {issue.issue}
-            </option>
-          ))}
-        </select>
-        {selectedIssue && (
+        {currentIssue && (
           <div>
+            <h2>{currentIssue.issue}</h2>
             <p>{currentIssue.questions[currentQuestionIndex].text}</p>
             {currentIssue.questions[currentQuestionIndex].options.map((option, index) => (
               <div key={option} style={{ margin: '10px 0' }}>
@@ -94,16 +136,16 @@ function QuizComponent() {
               Next
             </button>
             {currentQuestionIndex === currentIssue.questions.length - 1 && (
-              <button onClick={calculateQuizScore} style={{ padding: '10px', margin: '10px' }}>
-                <Link to='/dashboard' style={{ color: 'white', textDecoration: 'none' }}>Finish test</Link>
+              <button onClick={handleFinishQuiz} style={{ padding: '10px', margin: '10px' }}>
+                Finish test
               </button>
             )}
           </div>
         )}
-        {quizCompleted && (
+        {quizCompleted && selectedIssueIndex === quizBank.length - 1 && (
           <div>
-            {userDisorders.length > 0 ? (
-              <p>You have: {userDisorders.join(', ')}</p>
+            {Object.keys(userDisorders).length > 0 ? (
+              <p>You have: {JSON.stringify(userDisorders)}</p>
             ) : (
               <p>You do not have any disorders.</p>
             )}
@@ -112,6 +154,6 @@ function QuizComponent() {
       </div>
     </div>
   );
-};
+}
 
 export default QuizComponent;
