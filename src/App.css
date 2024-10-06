@@ -1,38 +1,59 @@
+/* App.css */
 .App {
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  min-height: auto; /* Remove full viewport height */
+  padding: 20px; /* Add padding to give space */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  height: auto; /* Remove the full height restriction */
 }
 
 .App-link {
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Flex layout for content to prevent overlap */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Make sure the content stays at the top */
+  height: auto; /* Remove full height */
+}
+
+/* Ensure the textarea and post button are visible */
+.post-area {
+  position: relative;
+  padding: 10px;
+  background-color: #fff; /* Light background for clarity */
+  min-height: 180px; /* Enforce minimum height */
+}
+
+.post-area textarea {
+  width: 100%;
+  height: 100px; /* Ensure proper size */
+  padding: 10px;
+}
+
+.post-btn {
+  margin-top: 10px;
+}
+
+.switch-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.content {
+  padding: 20px;
+  height: auto; /* Prevent fixed height */
 }

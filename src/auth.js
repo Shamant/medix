@@ -35,7 +35,6 @@ const GoogleAuth = () => {
     }
   }, []);
 
-
   const handleSignInWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -47,12 +46,12 @@ const GoogleAuth = () => {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-      localStorage.setItem('valid', name);
-          setTimeout(() => {
-            setLoading(false);
-            setSuccess(true);
-          }, 3000); 
-      setRedirectToData_Entry(true);
+        localStorage.setItem('valid', name);
+        setTimeout(() => {
+          setLoading(false);
+          setSuccess(true);
+        }, 3000);
+        setRedirectToData_Entry(true);
       } else {
         localStorage.setItem('username', name);
         setRedirectToDashboard(true);
@@ -71,53 +70,46 @@ const GoogleAuth = () => {
     return <Navigate to="/userform" />;
   }
 
-  
-
   return (
     <div className="login-container">
-  
-    <div className="animated-bg">
-      <div className="circle small"></div>
-      <div className="circle medium"></div>
-      <div className="circle large"></div>
+      <div className="animated-bg">
+        <div className="circle small"></div>
+        <div className="circle medium"></div>
+        <div className="circle large"></div>
+      </div>
+
+      {!success ? (
+        <div className="login-content">
+          <h1>Medix</h1>
+          {loading && (
+            <div className="loading-animation">
+              <div className="heart"></div>
+            </div>
+          )}
+          <button 
+            onClick={handleSignInWithGoogle} 
+            className={`login-button ${loading ? 'disabled' : ''}`}
+          >
+            <FaGoogle style={{ marginRight: '10px' }} />
+            {loading ? 'Authenticating...' : 'Sign In With Google'}
+          </button>
+          {error && <p className="error-message">{error}</p>} {/* Display error message */}
+        </div>
+      ) : (
+        <div className="success-animation">
+          <div className="heart"></div>
+          <div className="blood-channel channel1"></div>
+          <div className="blood-channel channel2"></div>
+          <div className="blood-channel channel3"></div>
+          <div className="blood-channel channel4"></div>
+          <div className="blood-channel channel5"></div>
+          <div className="blood-channel channel6"></div>
+          <div className="blood-channel channel7"></div>
+          <div className="blood-channel channel8"></div>
+          <h1 className="success-message">Success!</h1>
+        </div>
+      )}
     </div>
-
-
-    {!success ? (
-      <div className="login-content">
-        <h1>Medix</h1>
-        {loading && (
-          <div className="loading-animation">
-            {/* Heart Pumping Animation */}
-            <div className="heart"></div>
-          </div>
-        )}
-
-        <button 
-          onClick={handleSignInWithGoogle} 
-          className={`login-button ${loading ? 'disabled' : ''}`}
-        >
-          <FaGoogle style={{ marginRight: '10px' }} />
-          {loading ? 'Authenticating...' : 'Sign In With Google'}
-        </button>
-      </div>
-    ) : (
-      <div className="success-animation">
-        {/* Success Animation: Heart pumping blood through channels */}
-        <div className="heart"></div>
-        <div className="blood-channel channel1"></div>
-        <div className="blood-channel channel2"></div>
-        <div className="blood-channel channel3"></div>
-        <div className="blood-channel channel4"></div>
-        <div className="blood-channel channel5"></div>
-        <div className="blood-channel channel6"></div>
-        <div className="blood-channel channel7"></div>
-        <div className="blood-channel channel8"></div>
-        <h1 className="success-message">Success!</h1>
-      </div>
-    )}
-  </div>
-    
   );
 };
 

@@ -8,49 +8,28 @@ const Dashboard = () => {
   const [view, setView] = useState("community");
   const [communityPosts, setCommunityPosts] = useState([]);
   const [educationPosts, setEducationPosts] = useState([]);
-  const [user, setUser] = useState(null);
   const name = localStorage.getItem("username");
   const navigate = useNavigate(); // Use this for redirecting to /comment/{id}
 
   // Real-time fetch from Firebase when community or education view is active
   useEffect(() => {
-    if (view === "community") {
-      const postsCollection = collection(db, "posts");
-      const postsQuery = query(postsCollection, orderBy("date", "desc"));
+    const unsubscribe = view === "community" 
+      ? onSnapshot(query(collection(db, "posts"), orderBy("date", "desc")), (snapshot) => {
+          const postList = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setCommunityPosts(postList);
+        })
+      : onSnapshot(query(collection(db, "resources"), orderBy("date", "desc")), (snapshot) => {
+          const resourceList = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setEducationPosts(resourceList);
+        });
 
-      // Set up a real-time listener using onSnapshot for community posts
-      const unsubscribe = onSnapshot(postsQuery, (snapshot) => {
-        const postList = snapshot.docs.map((doc) => ({
-          id: doc.id, // Add post ID
-          ...doc.data()
-        }));
-        setCommunityPosts(postList);
-      });
-
-      // Clean up the listener when component unmounts or view changes
-      return () => unsubscribe();
-    }
-
-    if (view === "education") {
-      const resourcesCollection = collection(db, "resources");
-      const resourcesQuery = query(resourcesCollection, orderBy("date", "desc"));
-
-      // Set up a real-time listener using onSnapshot for educational content
-      const unsubscribe = onSnapshot(resourcesQuery, (snapshot) => {
-        const resourceList = snapshot.docs.map((doc) => ({
-          id: doc.id, // Add resource ID
-          ...doc.data()
-        }));
-        setEducationPosts(resourceList);
-      });
-
-      // Clean up the listener when component unmounts or view changes
-      return () => unsubscribe();
-    }
-
-    // Get user from localStorage
-    const storedUser = localStorage.getItem("user");
-    setUser(storedUser);
+    return () => unsubscribe();
   }, [view]);
 
   // Add post to Firebase for community posts
@@ -80,77 +59,76 @@ const Dashboard = () => {
 
   return (
     <div className="container">
-    {/* Menu with Chat Icon */}
-    <nav className="navbar">
-      <div className="logo">My Home Page</div>
-      <div className="chat" onClick={chat}>
-        <i className="fas fa-comments"></i> Chat
+      {/* Menu with Chat Icon */}
+      <nav className="navbar">
+        <div className="logo">Medix</div>
+        <div className="chat" onClick={chat}>
+          <i className="fas fa-comments"></i> Chat
+        </div>
+      </nav>
+
+      {/* Post Something Section */}
+      <div className="post-area">
+        <textarea
+          value={postText}
+          onChange={(e) => setPostText(e.target.value)}
+          placeholder="Post something..."
+          className="post-input"
+        ></textarea>
+        <button onClick={handlePost} className="post-btn">Post</button>
       </div>
-    </nav>
 
-    {/* Post Something Section */}
-    <div className="post-area">
-      <textarea
-        value={postText}
-        onChange={(e) => setPostText(e.target.value)}
-        placeholder="Post something..."
-      ></textarea>
-      <button onClick={handlePost}>
-        Post
-      </button>
-    </div>
+      {/* Buttons to Switch Between Views */}
+      <div className="switch-buttons">
+        <button onClick={() => setView("community")} className={view === "community" ? "active" : ""}>
+          Community
+        </button>
+        <button onClick={() => setView("education")} className={view === "education" ? "active" : ""}>
+          Educational Content
+        </button>
+      </div>
 
-    {/* Buttons to Switch Between Views */}
-    <div className="switch-buttons">
-      <button onClick={() => setView("community")} className={view === "community" ? "active" : ""}>
-        Community
-      </button>
-      <button onClick={() => setView("education")} className={view === "education" ? "active" : ""}>
-        Educational Content
-      </button>
+      {/* Display content based on the view */}
+      <div className="content">
+        {view === "community" ? (
+          <div className="post-list">
+            <h2 style={{color: "#1d9bf0"}}>Community Posts</h2>
+            {communityPosts.length > 0 ? (
+              communityPosts.map((post, index) => (
+                <div key={index} className="post" style={{borderRadius: "10px",}}>
+                  <p>{post.content}</p><br />
+                  <button className="reply-btn" onClick={() => handleReplyClick(post.id)}>Reply</button>
+                </div>
+              ))
+            ) : (
+              <p>No posts yet.</p>
+            )}
+          </div>
+        ) : (
+          <div className="resource-list">
+            <h2 style={{color: "#1d9bf0"}}>Educational Content</h2>
+            {name !== "shamant" && (
+              <>
+              <button onClick={add} className="add-btn">
+                + Add Educational Content
+              </button>
+              <br /><br /><br />
+              </>
+            )}
+            {educationPosts.length > 0 ? (
+              educationPosts.map((resource, index) => (
+                <div key={index} className="resource" style={{borderRadius: "10px",}}>
+                  <p>{resource.caption}</p>
+                  <a href={resource.link} target="_blank" rel="noopener noreferrer">View PDF</a>
+                </div>
+              ))
+            ) : (
+              <p>No educational content available.</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-
-    {/* Display content based on the view */}
-    <div className="content">
-      {view === "community" ? (
-        <div>
-          <h2>Community Posts</h2>
-          {communityPosts.length > 0 ? (
-            communityPosts.map((post, index) => (
-              <div key={index} className="post">
-                <p>{post.content}</p>
-                <button className="bsdkbutton" onClick={() => handleReplyClick(post.id)}>Reply</button>
-              </div>
-            ))
-          ) : (
-            <p>No posts yet.</p>
-          )}
-        </div>
-      ) : (
-        <div>
-          <h2>Educational Content</h2>
-          {/* + Button shown only if user is 'shamant' */}
-          {name === "shamant" && (
-            <button onClick={add} style={{ marginTop: "10px", display: "block", fontSize: "20px" }}>
-              + Add Educational Content
-            </button>
-          )}
-          {educationPosts.length > 0 ? (
-            educationPosts.map((resource, index) => (
-              <div key={index} className="resource">
-                <p>{resource.caption}</p>
-                <a href={resource.link} target="_blank" rel="noopener noreferrer">
-                  View PDF
-                </a>
-              </div>
-            ))
-          ) : (
-            <p>No educational content available.</p>
-          )}
-        </div>
-      )}
-    </div>
-  </div>
   );
 };
 
