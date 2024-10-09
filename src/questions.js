@@ -3,6 +3,7 @@ import quizBank from './quizbank';
 import { collection, updateDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from './config/firebase';
 import { Navigate } from 'react-router-dom';
+import './questionnaire.css';
 
 function QuizComponent() {
   const [selectedIssueIndex, setSelectedIssueIndex] = useState(0); // Automatically start with the first issue
@@ -110,49 +111,64 @@ function QuizComponent() {
   const currentIssue = quizBank[selectedIssueIndex];
 
   return (
-    <div style={{ height: '100vh', backgroundColor: '#333', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ padding: '20px', width: '100%', maxWidth: '700px', border: '1px solid #ccc', borderRadius: '10px', backgroundColor: '#444' }}>
-        {currentIssue && (
-          <div>
-            <h2>{currentIssue.issue}</h2>
-            <p>{currentIssue.questions[currentQuestionIndex].text}</p>
-            {currentIssue.questions[currentQuestionIndex].options.map((option, index) => (
-              <div key={option} style={{ margin: '10px 0' }}>
-                <input
-                  type="radio"
-                  id={`${option}-${index}`}
-                  name="answer"
-                  value={option}
-                  checked={answers[currentQuestionIndex + 1] === option}
-                  onChange={handleAnswerSelect}
-                />
-                <label htmlFor={`${option}-${index}`} style={{ marginLeft: '10px' }}>{option}</label>
-              </div>
-            ))}
-            <button onClick={handlePrevious} disabled={currentQuestionIndex === 0} style={{ padding: '10px', margin: '10px' }}>
+    <div className="questionnaire-container">
+      <h2 className="page-heading">Questionnaire</h2>
+    <div className="questionnaire-box">
+      {currentIssue && (
+        <div className="questionnaire-content">
+          <h2 className="questionnaire-title">{currentIssue.issue}</h2>
+          <p className="questionnaire-question">
+            {currentIssue.questions[currentQuestionIndex].text}
+          </p>
+          {currentIssue.questions[currentQuestionIndex].options.map((option, index) => (
+            <div key={option} className="questionnaire-option">
+              <input
+                type="radio"
+                id={`${option}-${index}`}
+                name="answer"
+                value={option}
+                checked={answers[currentQuestionIndex + 1] === option}
+                onChange={handleAnswerSelect}
+              />
+              <label htmlFor={`${option}-${index}`} className="questionnaire-label">
+                {option}
+              </label>
+            </div>
+          ))}
+          <div className="questionnaire-buttons">
+            <button
+              className="questionnaire-btn"
+              onClick={handlePrevious}
+              disabled={currentQuestionIndex === 0}
+            >
               Previous
             </button>
-            <button onClick={handleNext} disabled={currentQuestionIndex === currentIssue.questions.length - 1} style={{ padding: '10px', margin: '10px' }}>
+            <button
+              className="questionnaire-btn"
+              onClick={handleNext}
+              disabled={currentQuestionIndex === currentIssue.questions.length - 1}
+            >
               Next
             </button>
             {currentQuestionIndex === currentIssue.questions.length - 1 && (
-              <button onClick={handleFinishQuiz} style={{ padding: '10px', margin: '10px' }}>
+              <button className="questionnaire-btn" onClick={handleFinishQuiz}>
                 Finish test
               </button>
             )}
           </div>
-        )}
-        {quizCompleted && selectedIssueIndex === quizBank.length - 1 && (
-          <div>
-            {Object.keys(userDisorders).length > 0 ? (
-              <p>You have: {JSON.stringify(userDisorders)}</p>
-            ) : (
-              <p>You do not have any disorders.</p>
-            )}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+      {quizCompleted && selectedIssueIndex === quizBank.length - 1 && (
+        <div className="questionnaire-result">
+          {Object.keys(userDisorders).length > 0 ? (
+            <p className="result-text">You have: {JSON.stringify(userDisorders)}</p>
+          ) : (
+            <p className="result-text">You do not have any disorders.</p>
+          )}
+        </div>
+      )}
     </div>
+  </div>
   );
 }
 
