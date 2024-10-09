@@ -13,6 +13,7 @@ import {
 import { Navigate } from "react-router-dom";
 import { OpenAIApi, Configuration } from "openai";
 import "./App.css";
+import "./bot.css"
 
 const Chat = () => {
   const [redirectToDashboard, setRedirectToDashboard] = useState(false);
@@ -133,77 +134,44 @@ const Chat = () => {
   }
 
   return (
-    <div style={{ textAlign: "center", width: "100%", padding: "20px", boxSizing: "border-box", color: "white" }}>
-      <h1>AI Chatbot</h1>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            style={{
-              maxWidth: "30%",
-              minWidth: "30%",
-              backgroundColor: message.bot === "yes" ? "lightgray" : "blue",
-              borderRadius: "10px",
-              padding: "10px",
-              marginBottom: "5px",
-              textAlign: "left",
-              alignSelf: message.bot === "yes" ? "flex-start" : "flex-end", // Left for bot, right for user
-            }}
-          >
-            <h5 style={{ marginBottom: "2px", marginTop: "5px" }}>
-              {message.bot === "yes" ? "AI Chatbot" : message.name}
-            </h5>
-            <h4 style={{ margin: "0", marginBottom: "5px" }}>{message.message}</h4>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+<div className="container chat-container">
+  <h1 className="chat-title">AI Chatbot</h1>
+  <div className="content messages-container">
+    {messages.map((message) => (
+      <div
+        key={message.id}
+        className={`message-card ${message.bot === "yes" ? "bot-message" : "user-message"}`}
+      >
+        <h5 className="message-author">
+          {message.bot === "yes" ? "AI Chatbot" : message.name}
+        </h5>
+        <h4 className="message-content">{message.message}</h4>
       </div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: "20px", textAlign: "center" }}>
-        <input
-          type="text"
-          placeholder="Type your message..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSubmit(e);
-            }
-          }}
-          style={{
-            width: "23%",
-            padding: "10px",
-            borderRadius: "20px",
-            border: "none",
-            backgroundColor: "white",
-            color: "black",
-            marginRight: "5px",
-          }}
-        />
-        <button
-          onClick={handleSubmit}
-          aria-label="Send"
-          style={{
-            backgroundColor: "black",
-            color: "white",
-            border: "none",
-            borderRadius: "20px",
-            padding: "15px",
-            width: "100px",
-            cursor: "pointer",
-            transition: "background-color 0.3s",
-            outline: "none",
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = "#333";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = "black";
-          }}
-        >
-          Send
-        </button>
-      </div>
-    </div>
+    ))}
+    <div ref={messagesEndRef} />
+  </div>
+  <div className="post-area input-container">
+    <textarea
+      placeholder="Type your message..."
+      value={newMessage}
+      onChange={(e) => setNewMessage(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          handleSubmit(e);
+        }
+      }}
+      className="message-input"
+    />
+    <button
+      onClick={handleSubmit}
+      aria-label="Send"
+      className="send-button"
+    >
+      Send
+    </button>
+  </div>
+</div>
+
   );
 };
 

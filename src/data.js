@@ -49,46 +49,52 @@ const UserForm = () => {
   }
 
   return (
-    <div>
-      <h2>Create a New User</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username: </label>
+    <div className="input-page-container">
+      <h2 className="input-page-title">Create a New User</h2>
+      <form className="input-form" onSubmit={handleSubmit}>
+        <div className="input-field">
+          <label htmlFor="username">Username: </label>
           <input
             type="text"
+            id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>First Name: </label>
+        <div className="input-field">
+          <label htmlFor="firstName">First Name: </label>
           <input
             type="text"
+            id="firstName"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>Last Name: </label>
+        <div className="input-field">
+          <label htmlFor="lastName">Last Name: </label>
           <input
             type="text"
+            id="lastName"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>Age:     </label>
+        <div className="input-field">
+          <label htmlFor="age">Age: </label>
           <input
             type="number"
+            id="age"
             value={age}
             onChange={(e) => setAge(e.target.value)}
             required
           />
         </div>
-        <button type="submit">Submit</button>
+        <button className="submit-button" type="submit">
+          Submit
+        </button>
       </form>
     </div>
   );

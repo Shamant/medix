@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { db, collection, doc, query, where, onSnapshot, addDoc } from "./config/firebase"; // Ensure Firebase is properly configured
 import { getDoc, orderBy } from 'firebase/firestore';
+import 'font-awesome/css/font-awesome.min.css';
 import './comment.css';
 
 const CommentPage = () => {
@@ -64,7 +65,7 @@ const CommentPage = () => {
   };
 
   return (
-    <div>
+<div className="reply-container">
   {/* Back Arrow */}
   <div className="back-arrow" onClick={handleGoBack}>
     <i className="fas fa-arrow-left"></i>back

@@ -1,0 +1,136 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Chat Container */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    height: 100vh; /* Full height of the viewport */
+    background-color: #f4f4f9; /* Light background */
+  }
+  
+  /* Chat Title */
+  .chat-title {
+    margin-bottom: 20px;
+    text-align: center; /* Center title */
+    font-size: 24px; /* Increased font size */
+    color: #333; /* Dark text */
+  }
+  
+  /* Messages Container */
+  .messages-container {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow scrolling */
+    flex-grow: 1; /* Ensure it takes up available space */
+    background-color: #ffffff; /* White background for messages */
+    border: 1px solid #e0e0e0; /* Light border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px; /* Padding inside messages area */
+  }
+  
+  /* Message Card */
+  .message-card {
+    max-width: 70%; /* Maximum width for messages */
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0; /* Spacing between messages */
+    word-wrap: break-word; /* Wrap long words */
+  }
+  
+  /* Bot Message Style */
+  .bot-message {
+    background-color: #e1f5fe; /* Light blue for bot messages */
+    align-self: flex-start; /* Align bot messages to the left */
+  }
+  
+  /* User Message Style */
+  .user-message {
+    background-color: #1d9bf0; /* User message color */
+    color: white; /* Text color for user messages */
+    align-self: flex-end; /* Align user messages to the right */
+  }
+  
+  /* Author Name */
+  .message-author {
+    font-weight: bold; /* Bold for author name */
+    margin-bottom: 5px; /* Space below author name */
+  }
+  
+  /* Message Content */
+  .message-content {
+    margin: 0; /* Remove default margin */
+  }
+  
+  /* Input Container */
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px; /* Space above input area */
+  }
+  
+  /* Post Area */
+  .post-area {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Message Input */
+  .message-input {
+    width: 100%; /* Full width for textarea */
+    padding: 10px;
+    font-size: 16px; /* Increase font size */
+    background-color: #f4f4f9; /* Light background */
+    border: 1px solid #ccc; /* Light border */
+    color: #333; /* Dark text */
+    border-radius: 8px; /* Rounded corners */
+    resize: none; /* Disable resize */
+    height: 100px; /* Set height for textarea */
+  }
+  
+  /* Send Button */
+  .send-button {
+    margin-top: 10px; /* Space above button */
+    padding: 10px 20px;
+    background-color: #1d9bf0; /* Twitter Blue */
+    color: #fff; /* White text */
+    border: none; /* No border */
+    border-radius: 20px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s; /* Smooth transition */
+  }
+  
+  .send-button:hover {
+    background-color: #1a8cd8; /* Darker Twitter Blue on hover */
+  }
+  
+  /* Media Queries for Mobile Optimization */
+  @media (max-width: 768px) {
+    .message-card {
+      max-width: 90%; /* Increase width for mobile */
+    }
+  
+    .post-area {
+      padding: 5px; /* Adjust padding for mobile */
+    }
+  
+    .message-input {
+      height: 80px; /* Reduce height for textarea on mobile */
+    }
+  
+    .send-button {
+      padding: 8px 16px; /* Adjust button padding */
+    }
+  
+    .chat-title {
+      font-size: 1.5em; /* Increase title font size */
+    }
+  }
+  
