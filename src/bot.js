@@ -25,8 +25,9 @@ const Chat = () => {
 
   const openai = new OpenAIApi(
     new Configuration({
-      apiKey: "sk-22scKef6sw1nGWR6bjIHiyCpowIVJ41fp0jrVY668RT3BlbkFJ5YvNsKW210I_ZOa7dyo7iviIpZQL40A36kLikMZxoA",
+      apiKey: "",
     })
+    // supposed to move all this to the backend. using nodejs for the backend
   );
 
   useEffect(() => {
